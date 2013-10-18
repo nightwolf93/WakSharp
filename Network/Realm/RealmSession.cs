@@ -19,7 +19,8 @@ namespace WakSharp.Network.Realm
 
         private void _socket_OnSocketClosedEvent()
         {
-            
+            RealmServer.Clients.Remove(this);
+            Utilities.ConsoleStyle.Infos("Client disconnected !");
         }
 
         private void _socket_OnDataArrivalEvent(byte[] data)
@@ -27,7 +28,7 @@ namespace WakSharp.Network.Realm
             try
             {
                 var packet = new WakfuClientMessage(data);
-                Utilities.ConsoleStyle.Debug("OPCODE : " + packet.OPCode.ToString() + ", size : " + packet.Size);
+                Utilities.ConsoleStyle.Debug("<< OPCODE : " + packet.OPCode.ToString() + ", size : " + packet.Size);
 
                 switch (packet.OPCode)
                 {
@@ -42,9 +43,31 @@ namespace WakSharp.Network.Realm
             }
         }
 
+        public void Send(WakfuServerMessage packet)
+        {
+            try
+            {
+                this._socket.Send(packet.Build());
+                Utilities.ConsoleStyle.Debug(">> OPCODE : " + packet.OPCode.ToString() + ", size : " + packet.Size);
+            }
+            catch (Exception e)
+            {
+                Utilities.ConsoleStyle.Error("Can't send packet : " + e.ToString());
+            }
+        }
+
         private void Handle_CMSG_VERSION(Packets.CMSG_VERSION packet)
         {
             Utilities.ConsoleStyle.Debug("Check client version .. " + packet.ToString());
+            if (packet.ToString() == Utilities.Settings.ConfigurationManager.Server.WakfuVersion)
+            {
+                Utilities.ConsoleStyle.Debug("Versions are the same, go to next step");
+                this.Send(new Packets.SMSG_RSAKEY(Utilities.Crypto.CryptoManager.RsaPublicKey.ToArray()));
+            }
+            else
+            {
+                Utilities.ConsoleStyle.Error("Versions don't match, kick the client");
+            }
         }
     }
 }

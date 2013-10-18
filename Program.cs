@@ -14,6 +14,7 @@ namespace WakSharp
 
             Utilities.ConsoleStyle.DrawAscii();
 
+            Utilities.Crypto.CryptoManager.InitRSA();
             Network.Realm.RealmServer.Initialize();
 
             //TODO : Console commands handler

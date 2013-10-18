@@ -55,14 +55,17 @@
     <Compile Include="IO\BigEndianReader.cs" />
     <Compile Include="IO\BigEndianWriter.cs" />
     <Compile Include="Network\Packets\CMSG_VERSION.cs" />
+    <Compile Include="Network\Packets\SMSG_RSAKEY.cs" />
     <Compile Include="Network\Realm\RealmServer.cs" />
     <Compile Include="Network\Realm\RealmSession.cs" />
     <Compile Include="Network\WakfuClientMessage.cs" />
     <Compile Include="Network\WakfuOPCode.cs" />
+    <Compile Include="Network\WakfuServerMessage.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ConsoleStyle.cs" />
     <Compile Include="Utilities\Crypto\AsnKeyBuilder.cs" />
+    <Compile Include="Utilities\Crypto\CryptoManager.cs" />
     <Compile Include="Utilities\Crypto\RSA.cs" />
     <Compile Include="Utilities\Settings\ConfigurationManager.cs" />
     <Compile Include="Utilities\Settings\ServerConfiguration.cs" />

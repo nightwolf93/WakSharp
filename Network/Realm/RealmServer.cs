@@ -10,6 +10,7 @@ namespace WakSharp.Network.Realm
     public class RealmServer
     {
         public static SilverServer Server { get; set; }
+        public static List<RealmSession> Clients = new List<RealmSession>();
 
         public static void Initialize()
         {
@@ -31,7 +32,7 @@ namespace WakSharp.Network.Realm
         {
             Utilities.ConsoleStyle.Debug("Input connection on @realm server@");
             var session = new RealmSession(socket);
-
+            Clients.Add(session);
         }
 
         private static void Server_OnListeningEvent()

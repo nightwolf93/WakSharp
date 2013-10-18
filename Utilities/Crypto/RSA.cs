@@ -7,7 +7,7 @@ using System.IO;
 
 namespace WakSharp.Utilities.Crypto
 {
-    class RSA
+    public class RSA
     {
         public class RSAProvider
         {

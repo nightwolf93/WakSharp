@@ -8,6 +8,7 @@ namespace WakSharp.Utilities.Settings
     public class ServerConfiguration
     {
         public string ServerVersion { get; set; }
+        public string WakfuVersion { get; set; }
         public ServerNode Realm { get; set; }
         public ServerNode World { get; set; }
     }
