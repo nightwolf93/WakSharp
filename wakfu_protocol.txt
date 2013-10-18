@@ -1,0 +1,191 @@
+Auteur: LittleScaraby sur DozenOfElites.com
+
+
+
+J'ai récemment travaillé sur le jeu Wakfu et l'étude de son protocole. Comme les sources du client sont obfusquées, la construction du protocole est assez difficile, c'est pourquoi je partage ici mes travaux pour éviter aux développeurs curieux de savoir comment Wakfu fonctionne d'endurer les peines que j'ai moi même enduré :)
+
+I - Construction des messages
+
+Comme pour Dofus 2, tout est en BigEndian.
+Les messages réseau sont composés différemment selon leur provenance: les messages envoyés par le client sont légèrement différents de ceux envoyés par le serveur.
+
+A) Messages envoyés par le serveur
+
+Ils sont composés d'un header de 4 octets, suivi des données:
+- les deux premiers octets représentent la taille du message complet, c'est à dire en prenant compte les 4 octets du header
+- les deux derniers octets représentent l'ID du message
+
+Exemple de message serveur: 00 05 04 00 02
+-> en bleu: la taille du message complet (5 octets)
+-> en vert: l'ID du packet, ici 0x400 c'est à dire 1024 en décimal
+-> en rouge: les données
+
+Pourquoi envoyer la taille du message complet et pas seulement la taille des données, c'est une bonne question, mais par conséquent pour lire les données il faudra donc lire (taille - 4) octets.
+
+B) Messages envoyés par le client
+
+Ils sont composés d'un header de 5 octets, suivi des données:
+- les deux premiers octets représentent la taille du message complet, c'est à dire en prenant compte les 5 octets du header
+- l'octet suivant a pour l'instant une utilité inconnue, sa valeur dépend du message (apparemment 0 ou 1)
+- les deux derniers octets représentent l'ID du message
+
+Exemple de message client: 00 0E 00 00 07 01 00 12 05 38 37 37 32 38
+-> en bleu: la taille du message complet (14 octets)
+-> en violet: l'octet d'utilité inconnue
+-> en vert: l'ID du packet, ici 0x7 c'est à dire 7 en décimal
+-> en rouge: les données
+
+Même remarque que pour un message serveur en ce qui concerne la taille.
+
+II - Protocole
+
+Voici les messages que j'ai pu construire à l'aide des sources pour l'instant:
+https://gist.github.com/4461592
+
+Concrètement:
+- le client se connecte au serveur et envoie sa version (message ID = 7)
+- le client renvoie un deuxième message (message ID = 1031) qui correspond apparemment à une demande d'authentification
+- le serveur envoie une clé publique RSA de 1024 bits au format X509 (exactement le même format que pour Dofus 2, donc en utilisant des clés Dofus 2 cela fonctionne parfaitement) (message ID = 1032)
+- le client crypte les identifiants, et les renvoie au serveur (message ID = 1025)
+- si la connexion est refusée, le serveur envoie un message avec le résultat (message ID = 1024)
+- si la connexion est acceptée, le serveur envoie un message d'utilité pour l'instant inconnue (message ID = 2), puis le même message qu'en cas de connexion refusée mais avec un résultat valant 0 (message ID = 1024) et à la suite les données du compte. Il finit par envoyer la liste des serveurs (message ID = 1200)
+- quand le client se déconnecte (de lui même ou en cas de connexion refusée), il envoie un message de déconnexion (message ID = 1), auquel je ne vois pas vraiment d'utilité
+
+A) Retour sur le message ID = 1025
+
+Les identifiants cryptés sont envoyés sous la forme d'un tableau d'octets. Une fois décrypté grâce à la clé privée (l'algo est le même que pour Dofus 2, PKCS1 v15), le tableau d'octets possède la forme suivante:
+- 8 premiers octets: le paramètre [unknown] du message serveur ID = 1032
+- octet suivant: taille du nom de compte
+- chaîne de caractères constituant le nom de compte
+- octet suivant: taille du mot de passe
+- chaîne de caractères constituant le mot de passe
+
+Exemple: 80 00 00 00 00 00 00 00 03 71 62 63 06 64 65 66 67 68 6A
+-> en orange: [unknown]
+-> en vert: taille du nom de compte (3 caractères ici)
+-> en rouge: le nom de compte ("qbc" ici)
+-> en bleu: taille du mot de passe (6 caractères ici)
+-> en violet: le mot de passe ("defghj" ici)
+
+B) Retour sur le message ID = 1024
+
+En cas de connexion refusée, voici les valeurs possibles de [result]:
+- 2 = invalidLogin
+- 3 = alreadyConnected
+- 4 = saveInProgress
+- 127 = closedBeta
+- 9 = locked
+- 10 = loginServerDown
+- 11 = tooManyConnection
+- 12 = invalidPartner
+- 5 = banned (notez que la date de fin de ban est écrite sur 4 octets après le résultat)
+- 20 = invalidEmail
+- 21 = accountModeration
+- default = invalidLogin
+
+En cas de connexion acceptée, [result] vaut 0. Suivent alors les données du compte représentées par un tableau d'octets: je n'ai pas encore fini de les extraire
+
+C) Retour sur le message ID = 1200
+
+A venir...
+
+III - Proof of concept
+
+http://img11.hosting...48485proof1.jpg
+
+http://img11.hosting...56204proof2.jpg
+
+J'ai réalisé ceci grâce à un petit MITM en C++ vite fait. Pour pouvoir décrypter les identifiants, j'envoie au client ma propre clé publique plutôt que celle du serveur officiel et je peux alors les décrypter avec ma clé privée. Ensuite pour authentifier le compte, je recrypte les identifiants avec la clé publique officielle et je renvoie le message au serveur.
+
+
+Bon allez, je retourne faire des maths, je mettrai à jour ma progression régulièrement.
+
+
+
+
+ 
+
+ 
+
+
+
+
+/* ------------------------------------------------------
+-> message client: le client envoie la version au serveur
+- ID = 7
+- octet inconnu = 0
+*/
+
+byte major;
+short minor;
+byte sizeOfBuild;
+char[sizeOfBuild] build;
+
+
+/* ------------------------------------
+-> message client: demande de connexion
+- ID = 1031
+- octet inconnu = 1
+*/
+
+[message vide]
+
+
+/* -----------------------------
+-> message serveur: clé publique
+- ID = 1032
+*/
+
+long unknown;
+byte[] publicKey; // sa taille n'est pas préfixée, il suffit de lire tous les octets restants
+
+
+/* ------------------------------------------------
+-> message client: envoi des identifiants (cryptés)
+- ID = 1025
+- octet inconnu = 1
+*/
+
+byte[] credentials; // sa taille n'est pas préfixée, il suffit de lire tous les octets restants
+
+
+/* ----------------------------------------------
+-> message serveur:
+- ID = 2
+*/
+
+[à venir]
+
+
+/* ----------------------------------------------
+-> message serveur: résultat de la connexion
+- ID = 1024
+*/
+
+byte result;
+if (result == 5) // banni
+{
+int time;
+}
+else if (result == 0) // connexion acceptée
+{
+short sizeOfData;
+byte[sizeOfData] accountData;
+}
+
+
+/* -----------------------------------
+-> message serveur: liste des serveurs
+- ID = 1200
+*/
+
+byte[] servers; // sa taille n'est pas préfixée, il suffit de lire tous les octets restants
+
+
+/* --------------------------------------
+-> message client: demande de déconnexion
+- ID = 1
+- octet inconnu = 0
+*/
+
+[message vide]

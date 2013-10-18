@@ -1,0 +1,10 @@
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\WakSharp.exe
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\WakSharp.pdb
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\Newtonsoft.Json.dll
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\Newtonsoft.Json.xml
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\obj\x86\Debug\WakSharp.csprojResolveAssemblyReference.cache
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\obj\x86\Debug\WakSharp.exe
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\obj\x86\Debug\WakSharp.pdb
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\config.properties
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\SilverSock.dll
+c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\SilverSock.pdb
