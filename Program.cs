@@ -14,6 +14,8 @@ namespace WakSharp
 
             Utilities.ConsoleStyle.DrawAscii();
 
+            Database.DatabaseManager.Initialize();
+
             Utilities.Crypto.CryptoManager.InitRSA();
             Network.Realm.RealmServer.Initialize();
 

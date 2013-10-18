@@ -18,7 +18,7 @@ namespace WakSharp.Network.Packets
             this.Version = base.Reader.ReadByte();
             this.Revision = base.Reader.ReadShort();
             this.Change = base.Reader.ReadByte();
-            this.Build = base.Reader.ReadUTF();
+            this.Build = base.Reader.ReadString();
         }
 
         public override string ToString()

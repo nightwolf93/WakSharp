@@ -234,6 +234,14 @@ namespace WakSharp.IO
             return Encoding.UTF8.GetString(bytes);
         }
 
+        public string ReadString()
+        {
+            ushort length = ReadByte();
+
+            byte[] bytes = ReadBytes(length);
+            return Encoding.UTF8.GetString(bytes);
+        }
+
         /// <summary>
         ///   Read a string from the Buffer
         /// </summary>

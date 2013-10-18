@@ -37,6 +37,9 @@
     <ApplicationIcon>icone_wlg.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="MySql.Data">
+      <HintPath>E:\Developpement\Crystal\NewRealm\MySql.Data.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\packages\Newtonsoft.Json.5.0.8\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -52,9 +55,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\DatabaseManager.cs" />
+    <Compile Include="Database\Models\AccountModel.cs" />
+    <Compile Include="Enums\LoginResultEnum.cs" />
     <Compile Include="IO\BigEndianReader.cs" />
     <Compile Include="IO\BigEndianWriter.cs" />
+    <Compile Include="Network\Packets\CMSG_LOGINREQUEST.cs" />
     <Compile Include="Network\Packets\CMSG_VERSION.cs" />
+    <Compile Include="Network\Packets\SMSG_LOGINRESULT.cs" />
     <Compile Include="Network\Packets\SMSG_RSAKEY.cs" />
     <Compile Include="Network\Realm\RealmServer.cs" />
     <Compile Include="Network\Realm\RealmSession.cs" />

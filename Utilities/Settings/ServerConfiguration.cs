@@ -9,6 +9,7 @@ namespace WakSharp.Utilities.Settings
     {
         public string ServerVersion { get; set; }
         public string WakfuVersion { get; set; }
+        public DatabaseNode Database { get; set; }
         public ServerNode Realm { get; set; }
         public ServerNode World { get; set; }
     }
@@ -17,5 +18,13 @@ namespace WakSharp.Utilities.Settings
     {
         public string Host { get; set; }
         public int Port { get; set; }
+    }
+
+    public class DatabaseNode
+    {
+        public string Host { get; set; }
+        public string Name { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 }

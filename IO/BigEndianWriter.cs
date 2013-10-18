@@ -223,6 +223,17 @@ namespace WakSharp.IO
                 m_writer.Write(bytes[i]);
         }
 
+        public void WriteString(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            var len = (byte)bytes.Length;
+            WriteByte(len);
+
+            int i;
+            for (i = 0; i < len; i++)
+                m_writer.Write(bytes[i]);
+        }
+
         /// <summary>
         ///   Write a string into the buffer
         /// </summary>

@@ -8,3 +8,4 @@ c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\obj\x
 c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\config.properties
 c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\SilverSock.dll
 c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\SilverSock.pdb
+C:\Users\NightWolf\Documents\Visual Studio 2010\Projects\WakSharp\WakSharp\bin\Debug\MySql.Data.dll

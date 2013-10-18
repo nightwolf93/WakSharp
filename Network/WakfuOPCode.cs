@@ -10,6 +10,8 @@ namespace WakSharp.Network
     {
         UNKNOWN = -1,
         CMSG_VERSION = 7,
+        CMSG_LOGINREQUEST = 1025,
+        SMSG_LOGINRESULT = 1024,
         SMSG_RSAKEY = 1032,
     }
 }
