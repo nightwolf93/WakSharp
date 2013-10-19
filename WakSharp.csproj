@@ -60,8 +60,13 @@
     <Compile Include="Enums\LoginResultEnum.cs" />
     <Compile Include="IO\BigEndianReader.cs" />
     <Compile Include="IO\BigEndianWriter.cs" />
+    <Compile Include="Network\Packets\CMSG_CHANGEDIRECTION.cs" />
+    <Compile Include="Network\Packets\CMSG_COMMONCHATMESSAGE.cs" />
     <Compile Include="Network\Packets\CMSG_LOGINREQUEST.cs" />
+    <Compile Include="Network\Packets\CMSG_REQUESTMOVE.cs" />
     <Compile Include="Network\Packets\CMSG_VERSION.cs" />
+    <Compile Include="Network\Packets\CMSG_WORLDSELECT.cs" />
+    <Compile Include="Network\Packets\SMSG_LISTWORLDS.cs" />
     <Compile Include="Network\Packets\SMSG_LOGINRESULT.cs" />
     <Compile Include="Network\Packets\SMSG_RSAKEY.cs" />
     <Compile Include="Network\Realm\RealmServer.cs" />
@@ -69,6 +74,7 @@
     <Compile Include="Network\WakfuClientMessage.cs" />
     <Compile Include="Network\WakfuOPCode.cs" />
     <Compile Include="Network\WakfuServerMessage.cs" />
+    <Compile Include="Network\WakfuWorld.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities\ConsoleStyle.cs" />

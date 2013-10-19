@@ -11,7 +11,7 @@ namespace WakSharp.Utilities.Settings
         public string WakfuVersion { get; set; }
         public DatabaseNode Database { get; set; }
         public ServerNode Realm { get; set; }
-        public ServerNode World { get; set; }
+        public List<Network.WakfuWorld> Worlds = new List<Network.WakfuWorld>();
     }
 
     public class ServerNode

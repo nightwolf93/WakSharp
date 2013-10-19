@@ -32,5 +32,11 @@ namespace WakSharp.Network
             this.Writer.WriteShort((short)this.Writer.BaseStream.Length);
             return this.Writer.Data;
         }
+
+        public void PrintBuffer(bool hex)
+        {
+            var bufstr = BitConverter.ToString(this.Writer.Data).Replace("-", " ");       
+            Utilities.ConsoleStyle.Debug(bufstr);
+        }
     }
 }

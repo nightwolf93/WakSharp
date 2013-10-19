@@ -17,6 +17,8 @@ namespace WakSharp.IO
             get { return m_writer.BaseStream; }
         }
 
+        public Dictionary<int, int> Marks = new Dictionary<int,int>();
+
         /// <summary>
         ///   Gets available bytes number in the buffer
         /// </summary>
@@ -182,6 +184,17 @@ namespace WakSharp.IO
             }
         }
 
+        public void WriteBytesFromString(string bytes)
+        {
+            foreach (var b in bytes.Split(' '))
+            {
+                if (b != "")
+                {
+                    this.WriteBytes(Encoding.UTF8.GetBytes(b));
+                }
+            }
+        }
+
         /// <summary>
         ///   Write a Char into the buffer
         /// </summary>
@@ -262,6 +275,41 @@ namespace WakSharp.IO
             m_writer.BaseStream.Seek(offset, seekOrigin);
         }
 
+        public void MarkByte(int index)
+        {
+            this.Marks.Add(index, (int)this.Position);
+            this.WriteByte(0);
+        }
+
+        public void MarkInt(int index)
+        {
+            this.Marks.Add(index, (int)this.Position);
+            this.WriteInt(0);
+        }
+
+        public void EndMarkByte(int index, int add = 0)
+        {
+            var pos = this.Marks[index];
+            this.Seek((int)this.Position - this.Marks[index] + add, SeekOrigin.Begin);
+            this.WriteByte((byte)this.Marks[index]);
+            this.Seek(this.Data.Length, SeekOrigin.Begin);
+        }
+
+        public void EndMarkInt(int index, int add = 0)
+        {
+            var pos = this.Marks[index];
+            this.Seek((int)this.Position - this.Marks[index] + add, SeekOrigin.Begin);
+            this.WriteInt(this.Marks[index]);
+            this.Seek(this.Data.Length, SeekOrigin.Begin);
+        }
+
+        public void EndMarkIntAbsolute(int index, int add = 0)
+        {
+            var pos = this.Marks[index];
+            this.Seek((int)this.Position + add, SeekOrigin.Begin);
+            this.WriteInt(this.Marks[index]);
+            this.Seek(this.Data.Length, SeekOrigin.Begin);
+        }
 
         public void Clear()
         {

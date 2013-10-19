@@ -14,6 +14,7 @@ namespace WakSharp.Utilities.Crypto
         {
             RSA = new WakSharp.Utilities.Crypto.RSA.RSAProvider(1024);
             RsaPublicKey = RSA.ExportToX509().ToList();
+            Utilities.ConsoleStyle.Infos("RSA @key pairs@ initialized !");
         }
     }
 }

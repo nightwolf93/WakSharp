@@ -16,9 +16,9 @@ namespace WakSharp.Network.Packets
             base.Writer.WriteByte(0);
             base.Writer.WriteInt(6);
             base.Writer.WriteByte(0);
-            base.Writer.WriteLong(charID);
+            base.Writer.WriteLong(33965798L);
             base.Writer.WriteByte(0);
-            base.Writer.WriteLong(1000);//Subscribe
+            base.Writer.WriteLong(0L);//Subscribe
             base.Writer.WriteInt(isAdmin ? 1 : 0);
             base.Writer.WriteString(charName);
             base.Writer.WriteString("??");

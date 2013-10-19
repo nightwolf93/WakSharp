@@ -17,6 +17,8 @@ namespace WakSharp
             Database.DatabaseManager.Initialize();
 
             Utilities.Crypto.CryptoManager.InitRSA();
+
+            Utilities.ConsoleStyle.Infos("@'" + Utilities.Settings.ConfigurationManager.Server.Worlds.Count + "'@ wakfu worlds loaded !");
             Network.Realm.RealmServer.Initialize();
 
             //TODO : Console commands handler
