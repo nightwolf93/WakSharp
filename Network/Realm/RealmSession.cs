@@ -11,12 +11,14 @@ namespace WakSharp.Network.Realm
         private SilverSocket _socket { get; set; }
 
         public Database.Models.AccountModel Account { get; set; }
+        public WakfuWorld World { get; set; }
 
         public RealmSession(SilverSocket socket)
         {
             this._socket = socket;
             this._socket.OnDataArrivalEvent += new SilverEvents.DataArrival(_socket_OnDataArrivalEvent);
             this._socket.OnSocketClosedEvent += new SilverEvents.SocketClosed(_socket_OnSocketClosedEvent);
+            this.Send(new Packets.SMSG_110());
         }
 
         private void _socket_OnSocketClosedEvent()
@@ -115,6 +117,18 @@ namespace WakSharp.Network.Realm
         public void Handle_CMSG_WORLDSELECT(Packets.CMSG_WORLDSELECT packet)
         {
             Utilities.ConsoleStyle.Debug("Select world : " + packet.WorldID);
+            this.World = Utilities.Settings.ConfigurationManager.Server.Worlds.FirstOrDefault(x => x.ID == packet.WorldID);
+
+            this.Send(new Packets.SMSG_WORLDSELECTRESULT(this.World.ID, true));
+            this.Send_SMSG_SERVERTIME();
+            this.Send(new Packets.SMSG_CHARACTERSLIST());
+        }
+
+        public void Send_SMSG_SERVERTIME()
+        {
+            DateTime Yesterday = DateTime.Now.AddDays(-1);
+            TimeSpan TS = (TimeSpan)(DateTime.Now - Yesterday);
+            this.Send(new Packets.SMSG_SERVERTIME((long)TS.TotalMilliseconds));
         }
     }
 }

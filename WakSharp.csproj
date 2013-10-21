@@ -66,9 +66,13 @@
     <Compile Include="Network\Packets\CMSG_REQUESTMOVE.cs" />
     <Compile Include="Network\Packets\CMSG_VERSION.cs" />
     <Compile Include="Network\Packets\CMSG_WORLDSELECT.cs" />
+    <Compile Include="Network\Packets\SMSG_110.cs" />
+    <Compile Include="Network\Packets\SMSG_CHARACTERSLIST.cs" />
     <Compile Include="Network\Packets\SMSG_LISTWORLDS.cs" />
     <Compile Include="Network\Packets\SMSG_LOGINRESULT.cs" />
     <Compile Include="Network\Packets\SMSG_RSAKEY.cs" />
+    <Compile Include="Network\Packets\SMSG_SERVERTIME.cs" />
+    <Compile Include="Network\Packets\SMSG_WORLDSELECTRESULT.cs" />
     <Compile Include="Network\Realm\RealmServer.cs" />
     <Compile Include="Network\Realm\RealmSession.cs" />
     <Compile Include="Network\WakfuClientMessage.cs" />
@@ -95,7 +99,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icone_wlg.ico" />
-    <Content Include="Packets_Structures_1.28.txt" />
+    <Content Include="Packets_Structures_1.28.2.txt" />
     <Content Include="wakfu_protocol.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
