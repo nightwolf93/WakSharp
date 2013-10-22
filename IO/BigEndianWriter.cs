@@ -17,7 +17,7 @@ namespace WakSharp.IO
             get { return m_writer.BaseStream; }
         }
 
-        public Dictionary<int, int> Marks = new Dictionary<int,int>();
+        public Dictionary<int, long> Marks = new Dictionary<int, long>();
 
         /// <summary>
         ///   Gets available bytes number in the buffer
@@ -247,6 +247,17 @@ namespace WakSharp.IO
                 m_writer.Write(bytes[i]);
         }
 
+        public void WriteBigString(string str)
+        {
+            var bytes = Encoding.UTF8.GetBytes(str);
+            var len = (byte)bytes.Length;
+            WriteShort(len);
+
+            int i;
+            for (i = 0; i < len; i++)
+                m_writer.Write(bytes[i]);
+        }
+
         /// <summary>
         ///   Write a string into the buffer
         /// </summary>
@@ -269,51 +280,33 @@ namespace WakSharp.IO
             m_writer.Write(data);
         }
 
-
         public void Seek(int offset, SeekOrigin seekOrigin)
         {
             m_writer.BaseStream.Seek(offset, seekOrigin);
         }
 
-        public void MarkByte(int index)
-        {
-            this.Marks.Add(index, (int)this.Position);
-            this.WriteByte(0);
-        }
-
-        public void MarkInt(int index)
-        {
-            this.Marks.Add(index, (int)this.Position);
-            this.WriteInt(0);
-        }
-
-        public void EndMarkByte(int index, int add = 0)
-        {
-            var pos = this.Marks[index];
-            this.Seek((int)this.Position - this.Marks[index] + add, SeekOrigin.Begin);
-            this.WriteByte((byte)this.Marks[index]);
-            this.Seek(this.Data.Length, SeekOrigin.Begin);
-        }
-
-        public void EndMarkInt(int index, int add = 0)
-        {
-            var pos = this.Marks[index];
-            this.Seek((int)this.Position - this.Marks[index] + add, SeekOrigin.Begin);
-            this.WriteInt(this.Marks[index]);
-            this.Seek(this.Data.Length, SeekOrigin.Begin);
-        }
-
-        public void EndMarkIntAbsolute(int index, int add = 0)
-        {
-            var pos = this.Marks[index];
-            this.Seek((int)this.Position + add, SeekOrigin.Begin);
-            this.WriteInt(this.Marks[index]);
-            this.Seek(this.Data.Length, SeekOrigin.Begin);
-        }
-
         public void Clear()
         {
             m_writer = new BinaryWriter(new MemoryStream(), Encoding.UTF8);
+        }
+
+        #endregion
+
+        #region Marks System
+
+        public void MarkShort(int index)
+        {
+            this.Marks.Add(index, this.Position);
+            this.WriteShort(0); 
+        }
+
+        public void EndMarkShort(int index)
+        {
+            var mark = this.Marks[index];
+            var pos = this.Position;
+            this.Position = mark;
+            this.WriteShort((short)(this.Position - mark));
+            this.Position = this.Data.Length - 1;
         }
 
         #endregion

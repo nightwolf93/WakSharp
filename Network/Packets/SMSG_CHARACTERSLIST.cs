@@ -7,11 +7,14 @@ namespace WakSharp.Network.Packets
 {
     public class SMSG_CHARACTERSLIST : WakfuServerMessage
     {
-        public SMSG_CHARACTERSLIST()
+        public SMSG_CHARACTERSLIST(List<Database.Models.Character> characters)
             : base(WakfuOPCode.SMSG_CHARACTERSLIST)
         {
-            //TODO
-            base.Writer.WriteByte(0);//Characters count
+            base.Writer.WriteByte((byte)characters.Count);
+            foreach (var character in characters)
+            {
+                character.EncodeToCharactersList(base.Writer);
+            }
         }
     }
 }

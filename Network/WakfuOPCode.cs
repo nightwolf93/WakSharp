@@ -9,6 +9,7 @@ namespace WakSharp.Network
     public enum WakfuOPCode
     {
         UNKNOWN = -1,
+        CMSG_DISCONNECT = 1,
         CMSG_VERSION = 7,
         SMSG_LISTWORLDS = 1200,
         CMSG_WORLDSELECT = 1201,
@@ -24,5 +25,9 @@ namespace WakSharp.Network
         SMSG_SERVERTIME = 2063,
         SMSG_CHARACTERSLIST = 2048,
         SMSG_110 = 110,
+        CMSG_DELETECHARACTERREQUEST = 2073,
+        SMSG_SECRETANSWERREQUEST = 2074,
+        CMSG_CHARACTERCREATIONREQUEST = 2053,
+        CMSG_SELECTCHARACTERREQUEST = 2049,
     }
 }

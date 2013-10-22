@@ -15,6 +15,7 @@ namespace WakSharp
             Utilities.ConsoleStyle.DrawAscii();
 
             Database.DatabaseManager.Initialize();
+            Database.Storage.Initialize();
 
             Utilities.Crypto.CryptoManager.InitRSA();
 

@@ -7,7 +7,7 @@ using MySql.Data.MySqlClient;
 
 namespace WakSharp.Database.Models
 {
-    public class AccountModel
+    public class Account : Interfaces.IIdentificable
     {
         public int ID { get; set; }
         public string Username { get; set; }
@@ -15,15 +15,15 @@ namespace WakSharp.Database.Models
         public string Pseudo { get; set; }
         public int Rank { get; set; }
 
-        public static AccountModel FindOne(string username)
+        public static Account FindOne(string username)
         {
-            AccountModel account = null;
+            Account account = null;
             var command = new MySqlCommand("SELECT * FROM accounts WHERE username=@username", DatabaseManager.Connection);
             command.Parameters.Add(new MySqlParameter("@username", username));
             var reader = command.ExecuteReader();
             if (reader.Read())
             {
-                account = new AccountModel()
+                account = new Account()
                 {
                     ID = reader.GetInt32("id"),
                     Username = reader.GetString("username"),

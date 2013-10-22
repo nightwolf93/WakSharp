@@ -55,12 +55,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Database\Storage.cs" />
     <Compile Include="Database\DatabaseManager.cs" />
-    <Compile Include="Database\Models\AccountModel.cs" />
+    <Compile Include="Database\Models\Account.cs" />
+    <Compile Include="Database\Models\Character.cs" />
     <Compile Include="Enums\LoginResultEnum.cs" />
+    <Compile Include="Interfaces\IIdentificable.cs" />
     <Compile Include="IO\BigEndianReader.cs" />
     <Compile Include="IO\BigEndianWriter.cs" />
     <Compile Include="Network\Packets\CMSG_CHANGEDIRECTION.cs" />
+    <Compile Include="Network\Packets\CMSG_CHARACTERCREATIONREQUEST.cs" />
     <Compile Include="Network\Packets\CMSG_COMMONCHATMESSAGE.cs" />
     <Compile Include="Network\Packets\CMSG_LOGINREQUEST.cs" />
     <Compile Include="Network\Packets\CMSG_REQUESTMOVE.cs" />

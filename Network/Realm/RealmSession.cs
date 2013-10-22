@@ -8,10 +8,16 @@ namespace WakSharp.Network.Realm
 {
     public class RealmSession
     {
+        #region Fields
+
         private SilverSocket _socket { get; set; }
 
-        public Database.Models.AccountModel Account { get; set; }
+        public Database.Models.Account Account { get; set; }
         public WakfuWorld World { get; set; }
+
+        #endregion
+
+        #region Builders
 
         public RealmSession(SilverSocket socket)
         {
@@ -20,6 +26,10 @@ namespace WakSharp.Network.Realm
             this._socket.OnSocketClosedEvent += new SilverEvents.SocketClosed(_socket_OnSocketClosedEvent);
             this.Send(new Packets.SMSG_110());
         }
+
+        #endregion
+
+        #region Events
 
         private void _socket_OnSocketClosedEvent()
         {
@@ -47,6 +57,10 @@ namespace WakSharp.Network.Realm
                     case WakfuOPCode.CMSG_WORLDSELECT:
                         this.Handle_CMSG_WORLDSELECT(new Packets.CMSG_WORLDSELECT(data));
                         break;
+
+                    case WakfuOPCode.CMSG_CHARACTERCREATIONREQUEST:
+                        this.Handle_CMSG_CHARACTERCREATIONREQUEST(new Packets.CMSG_CHARACTERCREATIONREQUEST(data));
+                        break;
                 }
             }
             catch (Exception e)
@@ -55,12 +69,17 @@ namespace WakSharp.Network.Realm
             }
         }
 
+        #endregion
+
+        #region Public Methods
+
         public void Send(WakfuServerMessage packet)
         {
             try
             {
                 this._socket.Send(packet.Build());
                 Utilities.ConsoleStyle.Debug(">> OPCODE : " + packet.OPCode.ToString() + "(" + (int)packet.OPCode + "), size : " + packet.Size);
+                packet.Dump(packet.OPCode.ToString());
             }
             catch (Exception e)
             {
@@ -68,6 +87,24 @@ namespace WakSharp.Network.Realm
             }
         }
 
+        public List<Database.Models.Character> GetCharacters()
+        {
+            var characters = new List<Database.Models.Character>();
+            if (this.Account != null)
+            {
+                lock (Database.Storage.Characters) { characters = Database.Storage.Characters.FindAll(x => x.Account == this.Account.ID); }
+            }
+            return characters;
+        }
+
+        #endregion
+
+        #region Parsing / Handling
+
+        /// <summary>
+        /// Check client version if is outdated
+        /// </summary>
+        /// <param name="packet"></param>
         private void Handle_CMSG_VERSION(Packets.CMSG_VERSION packet)
         {
             Utilities.ConsoleStyle.Debug("Check client version .. " + packet.ToString());
@@ -82,16 +119,20 @@ namespace WakSharp.Network.Realm
             }
         }
 
+        /// <summary>
+        /// Check username and password and authentificate him
+        /// </summary>
+        /// <param name="packet"></param>
         private void Handle_CMSG_LOGINREQUEST(Packets.CMSG_LOGINREQUEST packet)
         {
             Utilities.ConsoleStyle.Debug("Check client account .. ");
-            var account = Database.Models.AccountModel.FindOne(packet.Username);
+            var account = Database.Models.Account.FindOne(packet.Username);
             if (account != null)
             {
                 if (account.Password == packet.Password)//Check password
                 {
                     this.Account = account;//Client is logged
-                    this.Send(new Packets.SMSG_LOGINRESULT(Enums.LoginResultEnum.CORRECT_LOGIN, account.ID, account.IsOp(), account.Pseudo));
+                    this.Send(new Packets.SMSG_LOGINRESULT(Enums.LoginResultEnum.CORRECT_LOGIN, account, account.ID, account.IsOp(), account.Pseudo));
                     Utilities.ConsoleStyle.Infos("Player @'" + account.Username + "'@ connected !");
 
                     this.Send_SMSG_LISTWORLDS();
@@ -99,36 +140,87 @@ namespace WakSharp.Network.Realm
                 else
                 {
                     Utilities.ConsoleStyle.Error("Password don't match");
-                    this.Send(new Packets.SMSG_LOGINRESULT(Enums.LoginResultEnum.INVALID_LOGIN, account.ID, account.IsOp(), account.Pseudo));
+                    this.Send(new Packets.SMSG_LOGINRESULT(Enums.LoginResultEnum.INVALID_LOGIN, null, account.ID, account.IsOp(), account.Pseudo));
                 }
             }
             else
             {
                 Utilities.ConsoleStyle.Error("Can't found the account @'" + packet.Username + "'@");
-                this.Send(new Packets.SMSG_LOGINRESULT(Enums.LoginResultEnum.INVALID_LOGIN, -1, false, ""));
+                this.Send(new Packets.SMSG_LOGINRESULT(Enums.LoginResultEnum.INVALID_LOGIN, null, -1, false, ""));
             }
         }
 
+        /// <summary>
+        /// Display the list of worlds
+        /// </summary>
         public void Send_SMSG_LISTWORLDS()
         {
             this.Send(new Packets.SMSG_LISTWORLDS(Utilities.Settings.ConfigurationManager.Server.Worlds));
         }
 
-        public void Handle_CMSG_WORLDSELECT(Packets.CMSG_WORLDSELECT packet)
+        /// <summary>
+        /// Switch beetwen login and world
+        /// </summary>
+        /// <param name="packet"></param>
+        private void Handle_CMSG_WORLDSELECT(Packets.CMSG_WORLDSELECT packet)
         {
             Utilities.ConsoleStyle.Debug("Select world : " + packet.WorldID);
             this.World = Utilities.Settings.ConfigurationManager.Server.Worlds.FirstOrDefault(x => x.ID == packet.WorldID);
 
             this.Send(new Packets.SMSG_WORLDSELECTRESULT(this.World.ID, true));
             this.Send_SMSG_SERVERTIME();
-            this.Send(new Packets.SMSG_CHARACTERSLIST());
+            this.Send(new Packets.SMSG_CHARACTERSLIST(this.GetCharacters()));
         }
 
+        /// <summary>
+        /// Send server time
+        /// </summary>
         public void Send_SMSG_SERVERTIME()
         {
             DateTime Yesterday = DateTime.Now.AddDays(-1);
             TimeSpan TS = (TimeSpan)(DateTime.Now - Yesterday);
             this.Send(new Packets.SMSG_SERVERTIME((long)TS.TotalMilliseconds));
         }
+
+        /// <summary>
+        /// Handle the character creation, check limit, nickname etc..
+        /// </summary>
+        /// <param name="packet"></param>
+        private void Handle_CMSG_CHARACTERCREATIONREQUEST(Packets.CMSG_CHARACTERCREATIONREQUEST packet)
+        {
+            Utilities.ConsoleStyle.Debug("Player @'" + this.Account.Username + "'@ try to create a character named @'" + packet.Name + "'@");
+            if (packet.Name.Length <= 15)
+            {
+                //TODO: Check if character exist
+                var character = new Database.Models.Character()
+                {
+                    ID = 1, //TODO: ID Generator
+                    Nickname = packet.Name,
+                    Level = 1,
+                    Experience = 0,
+                    Sex = packet.Sex,
+                    Breed = packet.Breed,
+                    SkinColor = packet.SkinColor,
+                    HairColor = packet.HairColor,
+                    PupilColor = packet.PupilColor,
+                    SkinColorFactor = packet.SkinColorFactor,
+                    HairColorFactor = packet.HairColorFactor,
+                    Cloth = packet.Cloth,
+                    Face = packet.Face,
+                    Title = -1,
+                    Account = this.Account.ID,
+                };
+
+                Database.Storage.AddCharacter(character);
+                Utilities.ConsoleStyle.Infos("Player @'" + this.Account.Username + "'@ create the character @'" + character.Nickname + "'@ with success");
+                //TODO: Send ok message
+            }
+            else
+            {
+                //TODO: Error message
+            }
+        }
+
+        #endregion
     }
 }

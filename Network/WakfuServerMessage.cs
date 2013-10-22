@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace WakSharp.Network
 {
@@ -37,6 +38,15 @@ namespace WakSharp.Network
         {
             var bufstr = BitConverter.ToString(this.Writer.Data).Replace("-", " ");       
             Utilities.ConsoleStyle.Debug(bufstr);
+        }
+
+        public void Dump(string file)
+        {
+            var writer = new BinaryWriter(new StreamWriter("Dumps/" + file + ".dat").BaseStream);
+            writer.Write(this.Writer.Data.Length);
+            writer.Write(this.Writer.Data);
+            writer.BaseStream.Close();
+            writer.Close();
         }
     }
 }
