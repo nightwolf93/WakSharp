@@ -13,8 +13,8 @@ namespace WakSharp.Network.Packets
             base.Writer.WriteByte((byte)result);
             if (result == Enums.LoginResultEnum.CORRECT_LOGIN)
             {
-                base.Writer.WriteShort(64);// Size of the block below
-                //base.Writer.MarkShort(0);
+                //base.Writer.WriteShort(64);// Size of the block below
+                base.Writer.MarkShort(0);
                 {
                     base.Writer.WriteByte(1);
                     base.Writer.WriteByte(0);
@@ -31,7 +31,7 @@ namespace WakSharp.Network.Packets
                     base.Writer.WriteString("??");
                     base.Writer.WriteShort(0);
                 }
-                //base.Writer.EndMarkShort(0);
+                base.Writer.EndMarkShort(0, -2);
             }
         }
     }

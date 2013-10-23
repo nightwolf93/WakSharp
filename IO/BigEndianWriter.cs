@@ -300,12 +300,12 @@ namespace WakSharp.IO
             this.WriteShort(0); 
         }
 
-        public void EndMarkShort(int index)
+        public void EndMarkShort(int index, int add = 0)
         {
             var mark = this.Marks[index];
             var pos = this.Position;
             this.Position = mark;
-            this.WriteShort((short)(this.Position - mark));
+            this.WriteShort((short)(pos - (mark - add)));
             this.Position = this.Data.Length - 1;
         }
 

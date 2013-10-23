@@ -29,38 +29,40 @@ namespace WakSharp.Database.Models
         /// <param name="bigEndianWriter">Stream</param>
         public void EncodeToCharactersList(IO.BigEndianWriter buffer)
         {
-            Utilities.ConsoleStyle.Debug("Encode character ..");
-            buffer.WriteShort(64);//Mark
-            buffer.WriteByte(4);//Block type
+            buffer.MarkShort(this.ID);
+            {
+                buffer.WriteByte(4);//Block type
 
-            buffer.WriteLong(this.ID);
-            buffer.WriteByte(0);
-            buffer.WriteLong(this.Account);
+                buffer.WriteLong(this.ID);
+                buffer.WriteByte(0);
+                buffer.WriteLong(this.Account);
 
-            buffer.WriteBigString(this.Nickname);
-            buffer.WriteShort((short)this.Breed);
+                buffer.WriteBigString(this.Nickname);
+                buffer.WriteShort((short)this.Breed);
 
-            buffer.WriteByte((byte)this.Sex);
-            buffer.WriteByte((byte)this.SkinColor);
-            buffer.WriteByte((byte)this.HairColor);
-            buffer.WriteByte((byte)this.PupilColor);
-            buffer.WriteByte((byte)this.SkinColorFactor);
-            buffer.WriteByte((byte)this.HairColorFactor);
-            buffer.WriteByte((byte)this.Cloth);
-            buffer.WriteByte((byte)this.Face);
-            buffer.WriteShort((short)this.Title);
+                buffer.WriteByte((byte)this.Sex);
+                buffer.WriteByte((byte)this.SkinColor);
+                buffer.WriteByte((byte)this.HairColor);
+                buffer.WriteByte((byte)this.PupilColor);
+                buffer.WriteByte((byte)this.SkinColorFactor);
+                buffer.WriteByte((byte)this.HairColorFactor);
+                buffer.WriteByte((byte)this.Cloth);
+                buffer.WriteByte((byte)this.Face);
+                buffer.WriteShort((short)this.Title);
 
-            buffer.WriteByte(0);//Stuff
+                buffer.WriteByte(0);//Stuff
 
-            buffer.WriteByte(1);
+                buffer.WriteByte(1);
 
-            buffer.WriteLong(this.Experience);
-            buffer.WriteShort(0);//Freepoints
-            buffer.WriteShort(0);
-            buffer.WriteShort(0);
-            buffer.WriteInt(0);
+                buffer.WriteLong(this.Experience);
+                buffer.WriteShort(0);//Freepoints
+                buffer.WriteShort(0);
+                buffer.WriteShort(0);
+                buffer.WriteInt(0);
 
-            buffer.WriteInt(1);//Nation
+                buffer.WriteInt(1);//Nation
+            }
+            buffer.EndMarkShort(this.ID, -2);
         }
     }
 }
