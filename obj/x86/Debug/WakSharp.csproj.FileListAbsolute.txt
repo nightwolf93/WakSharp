@@ -9,3 +9,7 @@ c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\D
 c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\SilverSock.dll
 c:\users\nightwolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\SilverSock.pdb
 C:\Users\NightWolf\Documents\Visual Studio 2010\Projects\WakSharp\WakSharp\bin\Debug\MySql.Data.dll
+C:\Users\NightWolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\ICSharpCode.TextEditor.dll
+C:\Users\NightWolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\bin\Debug\Noesis.Javascript.dll
+C:\Users\NightWolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\obj\x86\Debug\WakSharp.Modules.Developper.ScriptingForm.resources
+C:\Users\NightWolf\documents\visual studio 2010\Projects\WakSharp\WakSharp\obj\x86\Debug\WakSharp.csproj.GenerateResource.Cache

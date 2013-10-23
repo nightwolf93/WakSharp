@@ -14,6 +14,8 @@ namespace WakSharp.Database.Models
         public string Password { get; set; }
         public string Pseudo { get; set; }
         public int Rank { get; set; }
+        public string SecretQuestion { get; set; }
+        public string SecretAnswer { get; set; }
 
         public static Account FindOne(string username)
         {
@@ -30,6 +32,8 @@ namespace WakSharp.Database.Models
                     Password = reader.GetString("password"),
                     Pseudo = reader.GetString("pseudo"),
                     Rank = reader.GetInt32("rank"),
+                    SecretQuestion = reader.GetString("secret_question"),
+                    SecretAnswer = reader.GetString("secret_answer"),
                 };
             }
             reader.Close();

@@ -61,6 +61,14 @@ namespace WakSharp.Network.Realm
                     case WakfuOPCode.CMSG_CHARACTERCREATIONREQUEST:
                         this.Handle_CMSG_CHARACTERCREATIONREQUEST(new Packets.CMSG_CHARACTERCREATIONREQUEST(data));
                         break;
+
+                    case WakfuOPCode.CMSG_DELETECHARACTERREQUEST:
+                        this.Handle_CMSG_DELETECHARACTERREQUEST(new Packets.CMSG_DELETECHARACTERREQUEST(data));
+                        break;
+
+                    case WakfuOPCode.CMSG_SECRETANSWERSUBMIT:
+                        this.Handle_CMSG_SECRETANSWERSUBMIT(new Packets.CMSG_SECRETANSWERSUBMIT(data));
+                        break;
                 }
             }
             catch (Exception e)
@@ -95,6 +103,11 @@ namespace WakSharp.Network.Realm
                 lock (Database.Storage.Characters) { characters = Database.Storage.Characters.FindAll(x => x.Account == this.Account.ID); }
             }
             return characters;
+        }
+
+        public void SendCharactersList()
+        {
+            this.Send(new Packets.SMSG_CHARACTERSLIST(this.GetCharacters()));
         }
 
         #endregion
@@ -191,33 +204,83 @@ namespace WakSharp.Network.Realm
             Utilities.ConsoleStyle.Debug("Player @'" + this.Account.Username + "'@ try to create a character named @'" + packet.Name + "'@");
             if (packet.Name.Length <= 15)
             {
-                //TODO: Check if character exist
-                var character = new Database.Models.Character()
+                if (Network.World.Helper.GetCharacter(packet.Name) == null)
                 {
-                    ID = 1, //TODO: ID Generator
-                    Nickname = packet.Name,
-                    Level = 1,
-                    Experience = 0,
-                    Sex = packet.Sex,
-                    Breed = packet.Breed,
-                    SkinColor = packet.SkinColor,
-                    HairColor = packet.HairColor,
-                    PupilColor = packet.PupilColor,
-                    SkinColorFactor = packet.SkinColorFactor,
-                    HairColorFactor = packet.HairColorFactor,
-                    Cloth = packet.Cloth,
-                    Face = packet.Face,
-                    Title = -1,
-                    Account = this.Account.ID,
-                };
+                    //TODO: Check if character exist
+                    var character = new Database.Models.Character()
+                    {
+                        ID = Utilities.Basic.GenerateId(Database.Storage.Characters.Cast<Interfaces.IIdentificable>().ToList()),
+                        Nickname = packet.Name,
+                        Level = 1,
+                        Experience = 0,
+                        Sex = packet.Sex,
+                        Breed = packet.Breed,
+                        SkinColor = packet.SkinColor,
+                        HairColor = packet.HairColor,
+                        PupilColor = packet.PupilColor,
+                        SkinColorFactor = packet.SkinColorFactor,
+                        HairColorFactor = packet.HairColorFactor,
+                        Cloth = packet.Cloth,
+                        Face = packet.Face,
+                        Title = -1,
+                        Account = this.Account.ID,
+                    };
 
-                Database.Storage.AddCharacter(character);
-                Utilities.ConsoleStyle.Infos("Player @'" + this.Account.Username + "'@ create the character @'" + character.Nickname + "'@ with success");
-                //TODO: Send ok message
+                    Database.Storage.AddCharacter(character);
+                    Utilities.ConsoleStyle.Infos("Player @'" + this.Account.Username + "'@ create the character @'" + character.Nickname + "'@ with success");
+
+                    //TODO: Send ok message
+                }
+                else
+                {
+                    //TODO: Error message
+                }
             }
             else
             {
                 //TODO: Error message
+            }
+        }
+
+        /// <summary>
+        /// Request to delete a character from account
+        /// </summary>
+        /// <param name="packet"></param>
+        private void Handle_CMSG_DELETECHARACTERREQUEST(Packets.CMSG_DELETECHARACTERREQUEST packet)
+        {
+            var character = Network.World.Helper.GetCharacter(packet.CharacterID);
+            if (character != null)
+            {
+                if (character.Account == this.Account.ID)
+                {
+                    this.Send(new Packets.SMSG_SECRETANSWERREQUEST(character.ID, this.Account.SecretQuestion));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Check the answer to the secret question and delete if is good
+        /// </summary>
+        /// <param name="packet"></param>
+        private void Handle_CMSG_SECRETANSWERSUBMIT(Packets.CMSG_SECRETANSWERSUBMIT packet)
+        {
+            var character = Network.World.Helper.GetCharacter(packet.CharacterID);
+            if (character != null)
+            {
+                if (character.Account == this.Account.ID && this.Account.SecretAnswer == packet.Answer)
+                {
+                    Database.Storage.Characters.Remove(character);
+                    //this.Send(new Packets.SMSG_DELETECHARACTERRESULT((byte)Enums.DeleteCharacterResultEnum.OK));
+                    this.Send(new Packets.SMSG_CHARACTERSLIST(this.GetCharacters()));
+                }
+                else
+                {
+                    this.Send(new Packets.SMSG_DELETECHARACTERRESULT((byte)Enums.DeleteCharacterResultEnum.WrongAnswer));
+                }
+            }
+            else
+            {
+                this.Send(new Packets.SMSG_DELETECHARACTERRESULT((byte)Enums.DeleteCharacterResultEnum.WrongAnswer));
             }
         }
 

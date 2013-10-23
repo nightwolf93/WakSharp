@@ -306,7 +306,7 @@ namespace WakSharp.IO
             var pos = this.Position;
             this.Position = mark;
             this.WriteShort((short)(pos - (mark - add)));
-            this.Position = this.Data.Length - 1;
+            this.Seek(0, SeekOrigin.End);
         }
 
         #endregion
